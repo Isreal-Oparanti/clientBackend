@@ -13,11 +13,12 @@ app.use(bodyParser.urlencoded({limit: '30mb', extended: true}))
 
  
 app.use(express.json());
-app.use('/', express.static("uploads"))
+
 app.use(cors());
+app.use('/', express.static("uploads"))
 // import routes
 
-const register = require("./route/user");
+const register = require("./user");
   
 app.use("/api/user", register);
  
