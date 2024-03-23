@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({limit: '30mb', extended: true}))
  
 app.use(express.json());
 app.use('/', express.static("uploads"))
-
+app.use(cors());
 // import routes
 
 const register = require("./route/user");
@@ -23,7 +23,7 @@ app.use("/api/user", register);
  
  
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
   app.listen(PORT, function(){
-    console.log(`Server stated on port 5000`)
+    console.log(`Server stated on port ${PORT}`)
 })

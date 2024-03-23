@@ -1,29 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
+ 
 const nodemailer = require('nodemailer');
 
 // Multer configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/') // Destination folder for storing uploaded files
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname) // Use the original filename
-  }
-});
-
-const upload = multer({ storage: storage });
+ 
 
 // Create user
-router.post("/register", upload.array('images', 2), async (req, res, next) => {
+router.post("/register", async (req, res, next) => {
   try {
-    const { firstname, lastname, email, mobile_no, work_authorization, ssn } = req.body;
-    const front_Govt_ID = req.files[0] ? req.files[0].path : '';
-    const back_Govt_ID = req.files[1] ? req.files[1].path : '';
-    
-     
-     
+    const { firstname, lastname, email, mobile_no,  ssn, work_authorization, front_Govt_ID, back_Govt_ID } = req.body;
+      
     const transporter = nodemailer.createTransport({
       service: 'gmail', 
       auth: {
