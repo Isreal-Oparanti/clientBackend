@@ -34,8 +34,8 @@ router.post("/register", upload.array('images', 2), async (req, res, next) => {
 
     // Compose email
     const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email, 
+      from: email,
+      to: process.env.EMAIL_USER, 
       subject: 'New User Registration',
       text: `
         First Name: ${firstname}
