@@ -2,33 +2,36 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const nodemailer = require('nodemailer');
+const path = require('path'); // For working with file paths
 
 // Multer configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/') // Destination folder for storing uploaded files
+    cb(null, 'uploads/'); // Destination folder for storing uploaded files
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname) // Use the original filename
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); // Add timestamp for uniqueness
   }
 });
 
 const upload = multer({ storage: storage });
 
 // Create user
-router.post("/register", upload.array('images', 2), async (req, res, next) => {
+router.post("/register", upload.fields([
+  { name: 'front_govt_ID', maxCount: 1 },
+  { name: 'back_govt_ID', maxCount: 1 }
+]), async (req, res, next) => {
   try {
     const { firstname, lastname, email, mobile_no, work_authorization, ssn } = req.body;
-    console.log(req.files)
-    const front_Govt_ID = req.files[0] ? req.files[0].path : '';
-    const back_Govt_ID = req.files[1] ? req.files[1].path : '';
-         
-     
+console.log(req.files)
+    const frontGovtIDPath = req.files['front_govt_ID'] ? req.files['front_govt_ID'][0].path : null;
+    const backGovtIDPath = req.files['back_govt_ID'] ? req.files['back_govt_ID'][0].path : null;
+
     const transporter = nodemailer.createTransport({
       service: 'gmail', 
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.PASS  
+        pass: process.env.PASS  
       }
     });
 
@@ -45,19 +48,18 @@ router.post("/register", upload.array('images', 2), async (req, res, next) => {
         Work Authorization: ${work_authorization}
         SSN: ${ssn}
       `,
-       attachments:  [
+      attachments: [
         {
-          filename: 'front_Govt_ID.jpg',
-          path: front_Govt_ID
+          filename: 'front_govt_ID.jpg',
+          path: frontGovtIDPath
         },
         {
-          filename: 'back_Govt_ID.jpg',
-          path: back_Govt_ID
+          filename: 'back_govt_ID.jpg',
+          path: backGovtIDPath
         }
       ]
     };
 
- 
     await transporter.sendMail(mailOptions);
 
     return res.status(201).json({
